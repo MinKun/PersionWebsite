@@ -1,11 +1,11 @@
 package com.tydd.persion.metaspace;
 
+import com.tydd.persion.common.BaseCommon;
 import com.tydd.persion.dto.user.AdminUserDTO;
 import com.tydd.persion.util.StringUtil;
-import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @ClassName LoginMetaData
@@ -14,23 +14,29 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * @Date 2019/3/29
  * @Version 1.0
  **/
-@Service
 public class LoginMetaData {
+
+    private static volatile LoginMetaData loginMetaData = null;
 
     /** 存储管理员登录信息 */
     private HashMap<String, AdminUserDTO> loginUserMap = null;
 
-    private ReentrantReadWriteLock reentrantReadWriteLock = null;
+    /** 登录校验开关 */
+    private boolean loginVerificationSwitch = false;
 
-    private ReentrantReadWriteLock.ReadLock readLock = null;
-
-    private ReentrantReadWriteLock.WriteLock writeLock = null;
-
-    public LoginMetaData() {
+    private LoginMetaData() {
         this.loginUserMap = new HashMap<>();
-        reentrantReadWriteLock = new ReentrantReadWriteLock();
-        readLock = reentrantReadWriteLock.readLock();
-        writeLock = reentrantReadWriteLock.writeLock();
+    }
+
+    public static LoginMetaData getInstance() {
+        if (loginMetaData == null) {
+            synchronized (LoginMetaData.class) {
+                if (loginMetaData == null) {
+                    loginMetaData = new LoginMetaData();
+                }
+            }
+        }
+        return loginMetaData;
     }
 
     /**
@@ -39,12 +45,21 @@ public class LoginMetaData {
      * @return
      */
     public boolean isLogin(String token) {
-        readLock.lock();
         boolean isLogin = false;
         if (!StringUtil.isEmpty(token)) {
-            isLogin = loginUserMap.containsKey(token);
+            AdminUserDTO adminUserDTO = loginUserMap.get(token);
+            if (adminUserDTO != null) {
+                Long lastAccessTime = adminUserDTO.getLastAccessTime();
+                Long currentTime = new Date().getTime();
+                // 当前时间大于等于最后访问时间，并且时间差不超过登录超时时间设置
+                if (currentTime >= lastAccessTime && (currentTime - lastAccessTime < BaseCommon.LOGIN_TIMEOUT)) {
+                    isLogin = true;
+                    // 重置最后访问时间
+                    adminUserDTO.setLastAccessTime(currentTime);
+                    loginUserMap.put(token, adminUserDTO);
+                }
+            }
         }
-        readLock.unlock();
         return isLogin;
     }
 
@@ -54,12 +69,10 @@ public class LoginMetaData {
      * @return
      */
     public AdminUserDTO getLoginAdminUserInfo(String token) {
-        readLock.lock();
         AdminUserDTO adminUserDTO = null;
         if (!StringUtil.isEmpty(token)) {
             adminUserDTO = loginUserMap.get(token);
         }
-        readLock.unlock();
         return adminUserDTO;
     }
 
@@ -67,10 +80,8 @@ public class LoginMetaData {
      * 更新登录管理员信息
      * @param loginUserMap
      */
-    public void updateLoginUserMap(HashMap<String, AdminUserDTO> loginUserMap) {
-        writeLock.lock();
+    public synchronized void updateLoginUserMap(HashMap<String, AdminUserDTO> loginUserMap) {
         this.loginUserMap = loginUserMap;
-        writeLock.unlock();
     }
 
     /**
@@ -78,10 +89,24 @@ public class LoginMetaData {
      * @param token
      * @param loginUser
      */
-    public void addLoginUser(String token, AdminUserDTO loginUser) {
-        writeLock.lock();
+    public synchronized void addLoginUser(String token, AdminUserDTO loginUser) {
         loginUserMap.put(token, loginUser);
-        writeLock.unlock();
+    }
+
+    /**
+     * 获取登录校验开关
+     * @return
+     */
+    public boolean getLoginVerificationSwitch() {
+        return loginMetaData.loginVerificationSwitch;
+    }
+
+    /**
+     * 设置登录校验开关
+     * @param loginVerificationSwitch
+     */
+    public synchronized void setLoginVerificationSwitch(boolean loginVerificationSwitch) {
+        loginMetaData.loginVerificationSwitch = loginVerificationSwitch;
     }
 
 }

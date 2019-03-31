@@ -18,7 +18,7 @@ import java.net.UnknownHostException;
 
 /**
  * @ClassName MyApplication
- * @Description TODO
+ * @Description 启动类
  * @Author kun
  * @Date 2019/2/16
  * @Version 1.0

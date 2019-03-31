@@ -39,9 +39,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AdminUserOperationRecordRepository adminUserOperationRecordRepository;
 
-    @Autowired
-    private LoginMetaData loginMetaData;
-
     /**
      * 管理员登录验证
      *
@@ -78,7 +75,6 @@ public class UserServiceImpl implements UserService {
         String token = null;
         if (adminUserDTO != null) {
             token = UUID.randomUUID().toString();
-            loginMetaData.addLoginUser(token, adminUserDTO);
         }
         return token;
     }
