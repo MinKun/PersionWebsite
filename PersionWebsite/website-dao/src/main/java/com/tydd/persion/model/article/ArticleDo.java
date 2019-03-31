@@ -37,7 +37,8 @@ public class ArticleDo {
     private String articleLabel;
 
     /** 创建者 */
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name="createUser", nullable = true)
     private AdminUserDo createUser;
 
     /** 创建时间 */

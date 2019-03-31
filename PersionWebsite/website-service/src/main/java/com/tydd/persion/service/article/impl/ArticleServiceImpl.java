@@ -52,10 +52,7 @@ public class ArticleServiceImpl implements IArticleService {
      */
     @Override
     @Transactional(readOnly = true)
-    public BaseResponseDTO queryArticleList(Map<String, Object> queryMap) {
-        BaseResponseDTO responseDTO = new BaseResponseDTO();
-        List<ArticleDTO> articleList = new ArrayList<>();
-
+    public Page<ArticleDo> queryArticleList(final Map<String, Object> queryMap) {
         // 创建动态查询语句
         Specification specification = new Specification() {
             @Override
@@ -83,24 +80,7 @@ public class ArticleServiceImpl implements IArticleService {
         Integer pageNumber = (Integer) queryMap.get("pageNumber");
         Integer pageSize = (Integer) queryMap.get("pageSize");
         String order = (String) queryMap.get("order");
-        Page<ArticleDo> articleDoPage = articleRepository.findAll(specification, PagingUtil.buildPageRequest(pageNumber, pageSize, order));
-        if (articleDoPage.getSize() > 0) {
-            List<ArticleDo> articleDoList = articleDoPage.getContent();
-            ArticleDTO articleDTO = null;
-            for (ArticleDo articleDo : articleDoList) {
-                articleDTO = new ArticleDTO();
-                BeanUtils.copyProperties(articleDo, articleDTO);
-                articleList.add(articleDTO);
-            }
-            ResponseDataDTO responseDataDTO = new ResponseDataDTO();
-            responseDataDTO.setDataList(articleList);
-            responseDataDTO.setPageNumber(pageNumber);
-            responseDataDTO.setPageSize(pageSize);
-            responseDataDTO.setTotalSize(articleDoPage.getTotalElements());
-            responseDataDTO.setTotalPage(articleDoPage.getTotalPages());
-            responseDTO.setResp(responseDataDTO);
-        }
-        return responseDTO;
+        return articleRepository.findAll(specification, PagingUtil.buildPageRequest(pageNumber, pageSize, order));
     }
 
     @Override

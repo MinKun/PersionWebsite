@@ -39,9 +39,6 @@ public class ArticleDTO extends BaseDTO {
     /** 文章标签 */
     private String articleLabel;
 
-    /** 创建者 */
-    private AdminUserDo createUser;
-
     /** 创建时间 */
     private Date createTime;
 
@@ -63,7 +60,6 @@ public class ArticleDTO extends BaseDTO {
                 ", articlePlainText='" + articlePlainText + '\'' +
                 ", articleType=" + articleType +
                 ", articleLabel='" + articleLabel + '\'' +
-                ", createUser=" + createUser +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
                 ", releaseTime=" + releaseTime +
@@ -117,14 +113,6 @@ public class ArticleDTO extends BaseDTO {
 
     public void setArticleLabel(String articleLabel) {
         this.articleLabel = articleLabel;
-    }
-
-    public AdminUserDo getCreateUser() {
-        return createUser;
-    }
-
-    public void setCreateUser(AdminUserDo createUser) {
-        this.createUser = createUser;
     }
 
     public Date getCreateTime() {

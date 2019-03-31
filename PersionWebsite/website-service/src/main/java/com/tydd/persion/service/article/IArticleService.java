@@ -1,9 +1,9 @@
 package com.tydd.persion.service.article;
 
-import com.tydd.persion.dto.BaseResponseDTO;
 import com.tydd.persion.dto.article.ArticleDTO;
+import com.tydd.persion.model.article.ArticleDo;
+import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,7 +20,7 @@ public interface IArticleService {
      * @param queryMap
      * @return
      */
-    BaseResponseDTO queryArticleList(Map<String, Object> queryMap);
+    Page<ArticleDo> queryArticleList(Map<String, Object> queryMap);
 
     /**
      * 查询文章详细信息

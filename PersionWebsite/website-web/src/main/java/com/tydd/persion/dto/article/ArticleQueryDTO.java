@@ -1,5 +1,6 @@
 package com.tydd.persion.dto.article;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tydd.persion.dto.PageDTO;
 
 /**
@@ -9,6 +10,7 @@ import com.tydd.persion.dto.PageDTO;
  * @Date 2019/3/30
  * @Version 1.0
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleQueryDTO extends PageDTO {
 
     /** 文章标题 */
