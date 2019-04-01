@@ -2,7 +2,7 @@ package com.tydd.persion.exception;
 
 /**
  * @ClassName WebInterfaceException
- * @Description TODO
+ * @Description web接口异常
  * @Author kun
  * @Date 2019/2/16
  * @Version 1.0

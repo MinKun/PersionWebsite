@@ -91,6 +91,9 @@ public class ArticleServiceImpl implements IArticleService {
         if (articleDo != null) {
             articleDTO = new ArticleDTO();
             BeanUtils.copyProperties(articleDo, articleDTO);
+            ArticleContentDo articleContentDo = articleDo.getArticleContentDo();
+            articleDTO.setArticleContent(articleContentDo.getArticleContent());
+            articleDTO.setArticlePlainText(articleContentDo.getArticlePlainText());
         } else {
             LOGGER.error("未查询到ID=" + id + "的article表数据");
         }

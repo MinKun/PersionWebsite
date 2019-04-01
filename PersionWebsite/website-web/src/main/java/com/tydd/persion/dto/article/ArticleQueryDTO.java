@@ -5,7 +5,7 @@ import com.tydd.persion.dto.PageDTO;
 
 /**
  * @ClassName ArticleQueryDTO
- * @Description TODO
+ * @Description 查询文章DTO
  * @Author kun
  * @Date 2019/3/30
  * @Version 1.0

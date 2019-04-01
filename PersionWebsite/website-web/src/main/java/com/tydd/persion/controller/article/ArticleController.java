@@ -5,6 +5,8 @@ import com.tydd.persion.dto.BaseResponseDTO;
 import com.tydd.persion.dto.ResponseDataDTO;
 import com.tydd.persion.dto.article.ArticleDTO;
 import com.tydd.persion.dto.article.ArticleQueryDTO;
+import com.tydd.persion.dto.article.ArticleUpdateDTO;
+import com.tydd.persion.exception.WebInterfaceException;
 import com.tydd.persion.model.article.ArticleDo;
 import com.tydd.persion.service.article.IArticleService;
 import com.tydd.persion.util.ResponseUtil;
@@ -16,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ import java.util.Map;
  * @Date 2019/3/30
  * @Version 1.0
  */
-@Controller
+@RestController
 @RequestMapping(value = "article")
 public class ArticleController {
 
@@ -48,8 +47,7 @@ public class ArticleController {
      * @param articleQueryDTO
      * @return
      */
-    @RequestMapping(value = "list", method = RequestMethod.POST)
-    @ResponseBody
+    @RequestMapping(method = RequestMethod.POST)
     public BaseResponseDTO queryArticleList(@Valid ArticleQueryDTO articleQueryDTO, BindingResult result) {
         BaseResponseDTO responseDTO = new BaseResponseDTO();
         try {
@@ -89,8 +87,47 @@ public class ArticleController {
             } else {
                 responseDTO = ResponseUtil.buildWrongRequestResponse(result);
             }
-        } catch (Exception ex) {
+        } catch (WebInterfaceException ex) {
             String errorMessage = "查询文章列表异常";
+            responseDTO = ResponseUtil.buildErrorResponse(errorMessage);
+            LOGGER.error(errorMessage, ex);
+        }
+        return responseDTO;
+    }
+
+    /**
+     * 查询文章详细信息
+     * @param articleId
+     * @return
+     */
+    @RequestMapping(value = "{id}", method = RequestMethod.GET)
+    public BaseResponseDTO queryArticleView(@PathVariable("id") Long articleId) {
+        BaseResponseDTO responseDTO = null;
+        try {
+            ArticleDTO articleDTO = articleService.queryArticleById(articleId);
+            responseDTO = ResponseUtil.buildSuccessResponse("查询文章详细信息成功");
+            responseDTO.setData(articleDTO);
+        } catch (WebInterfaceException ex) {
+            String errorMessage = "查询文章详细信息异常";
+            responseDTO = ResponseUtil.buildErrorResponse(errorMessage);
+            LOGGER.error(errorMessage, ex);
+        }
+        return responseDTO;
+    }
+
+    /**
+     * 更新文章信息
+     * @param articleUpdateDTO
+     * @param result
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.PUT)
+    public BaseResponseDTO updateArticle(@Valid ArticleUpdateDTO articleUpdateDTO, BindingResult result) {
+        BaseResponseDTO responseDTO = null;
+        try {
+
+        } catch (WebInterfaceException ex) {
+            String errorMessage = "更新文章信息异常";
             responseDTO = ResponseUtil.buildErrorResponse(errorMessage);
             LOGGER.error(errorMessage, ex);
         }
