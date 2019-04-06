@@ -1,9 +1,11 @@
 package com.tydd.persion.dto.article;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tydd.persion.dto.BaseDTO;
 import com.tydd.persion.model.user.AdminUserDo;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -17,8 +19,6 @@ import java.util.Date;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ArticleDTO extends BaseDTO {
-
-    private Long id;
 
     /** 文章标题 */
     @NotEmpty
@@ -40,12 +40,15 @@ public class ArticleDTO extends BaseDTO {
     private String articleLabel;
 
     /** 创建时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /** 更新时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /** 发布时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
     private Date releaseTime;
 
     /** 文章状态 */
@@ -54,7 +57,6 @@ public class ArticleDTO extends BaseDTO {
     @Override
     public String toString() {
         return "ArticleDTO{" +
-                "id=" + id +
                 ", articleTitle='" + articleTitle + '\'' +
                 ", articleContent=" + articleContent +
                 ", articlePlainText='" + articlePlainText + '\'' +
@@ -65,14 +67,6 @@ public class ArticleDTO extends BaseDTO {
                 ", releaseTime=" + releaseTime +
                 ", articleStatus=" + articleStatus +
                 '}';
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getArticleTitle() {

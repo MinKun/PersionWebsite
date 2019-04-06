@@ -55,6 +55,7 @@ public class UserServiceImpl implements UserService {
                 adminUserDTO = new AdminUserDTO();
                 adminUserDTO.setLoginName(adminUserDo.getLoginName());
                 adminUserDTO.setNickName(adminUserDo.getNickName());
+                adminUserDTO.setId(adminUserDo.getId());
                 // 添加操作记录
                 this.addAdminUserOperationRecord(adminUserDo, BaseCommon.ADMIN_USER_OPERATION_TYPE_LOGIN);
             }

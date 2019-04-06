@@ -4,6 +4,7 @@ import com.tydd.persion.dto.article.ArticleDTO;
 import com.tydd.persion.model.article.ArticleDo;
 import org.springframework.data.domain.Page;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -32,9 +33,10 @@ public interface IArticleService {
     /**
      * 添加文章
      * @param articleDTO
+     * @param request
      * @return
      */
-    boolean addArticle(ArticleDTO articleDTO);
+    boolean addArticle(ArticleDTO articleDTO, HttpServletRequest request);
 
     /**
      * 更新文章

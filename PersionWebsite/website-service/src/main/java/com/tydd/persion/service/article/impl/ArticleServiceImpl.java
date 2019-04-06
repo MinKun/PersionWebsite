@@ -2,13 +2,15 @@ package com.tydd.persion.service.article.impl;
 
 import com.tydd.persion.dao.article.ArticleContentRepository;
 import com.tydd.persion.dao.article.ArticleRepository;
-import com.tydd.persion.dto.BaseResponseDTO;
-import com.tydd.persion.dto.ResponseDataDTO;
+import com.tydd.persion.dao.user.AdminUserRepository;
 import com.tydd.persion.dto.article.ArticleDTO;
+import com.tydd.persion.dto.user.AdminUserDTO;
 import com.tydd.persion.model.article.ArticleContentDo;
 import com.tydd.persion.model.article.ArticleDo;
+import com.tydd.persion.model.user.AdminUserDo;
 import com.tydd.persion.service.article.IArticleService;
 import com.tydd.persion.util.PagingUtil;
+import com.tydd.persion.util.SessionHelper;
 import com.tydd.persion.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,9 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -44,6 +48,9 @@ public class ArticleServiceImpl implements IArticleService {
 
     @Autowired
     private ArticleContentRepository articleContentRepository;
+
+    @Autowired
+    private AdminUserRepository adminUserRepository;
 
     /**
      * 查询文章列表
@@ -92,8 +99,10 @@ public class ArticleServiceImpl implements IArticleService {
             articleDTO = new ArticleDTO();
             BeanUtils.copyProperties(articleDo, articleDTO);
             ArticleContentDo articleContentDo = articleDo.getArticleContentDo();
-            articleDTO.setArticleContent(articleContentDo.getArticleContent());
-            articleDTO.setArticlePlainText(articleContentDo.getArticlePlainText());
+            if (articleContentDo != null) {
+                articleDTO.setArticleContent(articleContentDo.getArticleContent());
+                articleDTO.setArticlePlainText(articleContentDo.getArticlePlainText());
+            }
         } else {
             LOGGER.error("未查询到ID=" + id + "的article表数据");
         }
@@ -108,19 +117,30 @@ public class ArticleServiceImpl implements IArticleService {
      */
     @Override
     @Transactional
-    public boolean addArticle(ArticleDTO articleDTO) {
+    public boolean addArticle(ArticleDTO articleDTO, HttpServletRequest request) {
         boolean addFlag = false;
         // 保存文章内容表数据
-        ArticleContentDo articleContentDo = new ArticleContentDo();
-        articleContentDo.setArticleContent(articleDTO.getArticleContent());
-        articleContentDo.setArticlePlainText(articleContentDo.getArticlePlainText());
-        articleContentDo = articleContentRepository.save(articleContentDo);
+        String articleContent = articleDTO.getArticleContent();
+        String articlePlainText = articleDTO.getArticlePlainText();
+        ArticleContentDo articleContentDo = null;
+        if (!StringUtil.isEmpty(articleContent) && !StringUtil.isEmpty(articlePlainText)) {
+            articleContentDo = new ArticleContentDo();
+            articleContentDo.setArticleContent(articleDTO.getArticleContent());
+            articleContentDo.setArticlePlainText(articleDTO.getArticlePlainText());
+            articleContentDo = articleContentRepository.save(articleContentDo);
+        }
+
         // 保存文章表数据
         ArticleDo articleDo = new ArticleDo();
         BeanUtils.copyProperties(articleDTO, articleDo);
-        articleDo.setArticleContentDo(articleContentDo);
+        AdminUserDTO adminUserDTO = SessionHelper.getLoginAdminUser(request);
+        AdminUserDo adminUserDo = adminUserRepository.findOne(adminUserDTO.getId());
+        articleDo.setCreateUser(adminUserDo);
+        articleDo.setCreateTime(new Date());
+        if (articleContentDo != null) {
+            articleDo.setArticleContentDo(articleContentDo);
+        }
         articleDo = articleRepository.save(articleDo);
-
         if (articleDo != null) {
             addFlag = true;
         }
@@ -137,8 +157,41 @@ public class ArticleServiceImpl implements IArticleService {
     @Transactional
     public boolean updateArticle(ArticleDTO articleDTO) {
         boolean updateFlag = false;
-        ArticleDo articleDo = new ArticleDo();
-        BeanUtils.copyProperties(articleDo, articleDTO);
+        Date currentTime = new Date();
+        ArticleDo articleDo = articleRepository.findOne(articleDTO.getId());
+        if (articleDo != null) {
+            // 更新文章基本信息
+            String articleTitle = articleDTO.getArticleTitle();
+            Integer articleType = articleDTO.getArticleType();
+            String articleLabel = articleDTO.getArticleLabel();
+            Integer articleStatus = articleDTO.getArticleStatus();
+            if (!StringUtil.isEmpty(articleTitle)) {
+                articleDo.setArticleTitle(articleTitle);
+            }
+            if (articleType != null) {
+                articleDo.setArticleType(articleType);
+            }
+            if (!StringUtil.isEmpty(articleLabel)) {
+                articleDo.setArticleLabel(articleLabel);
+            }
+            if (articleStatus != null) {
+                if (articleStatus == 2) {
+                    articleDo.setReleaseTime(currentTime);
+                }
+                articleDo.setArticleStatus(articleStatus);
+            }
+
+            // 更新文章内容
+            String articleContent = articleDTO.getArticleContent();
+            String articlePlainText = articleDTO.getArticlePlainText();
+            if (!StringUtil.isEmpty(articleContent) && !StringUtil.isEmpty(articlePlainText)) {
+                ArticleContentDo articleContentDo = articleDo.getArticleContentDo();
+                articleContentDo.setArticleContent(articleContent);
+                articleContentDo.setArticlePlainText(articlePlainText);
+            }
+            articleRepository.save(articleDo);
+        }
+        articleDo.setUpdateTime(currentTime);
         articleDo = articleRepository.save(articleDo);
         if (articleDo != null) {
             updateFlag = true;
