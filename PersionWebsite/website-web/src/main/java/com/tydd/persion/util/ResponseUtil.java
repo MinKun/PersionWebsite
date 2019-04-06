@@ -73,7 +73,7 @@ public class ResponseUtil {
         StringBuilder errorMsg = new StringBuilder();
         if (result != null) {
             List<ObjectError> errorList = result.getAllErrors();
-            ObjectError error = null;
+            /*ObjectError error = null;
             for (int i = 0, length = errorList.size(); i < length; i++) {
                 error = errorList.get(i);
                 errorMsg.append(error.getCode())
@@ -83,7 +83,8 @@ public class ResponseUtil {
                 if( i != (length - 1)) {
                     errorMsg.append("; ");
                 }
-            }
+            }*/
+            errorMsg = new StringBuilder(errorList.toString());
         }
         return errorMsg.toString();
     }

@@ -3,6 +3,7 @@ package com.tydd.persion.controller.article;
 import com.tydd.persion.common.BaseCommon;
 import com.tydd.persion.dto.BaseResponseDTO;
 import com.tydd.persion.dto.ResponseDataDTO;
+import com.tydd.persion.dto.article.ArticleAddDTO;
 import com.tydd.persion.dto.article.ArticleDTO;
 import com.tydd.persion.dto.article.ArticleQueryDTO;
 import com.tydd.persion.dto.article.ArticleUpdateDTO;
@@ -10,17 +11,17 @@ import com.tydd.persion.exception.WebInterfaceException;
 import com.tydd.persion.model.article.ArticleDo;
 import com.tydd.persion.service.article.IArticleService;
 import com.tydd.persion.util.ResponseUtil;
-import com.tydd.persion.util.StringUtil;
+import org.dozer.DozerBeanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,24 +48,13 @@ public class ArticleController {
      * @param articleQueryDTO
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST)
-    public BaseResponseDTO queryArticleList(@Valid ArticleQueryDTO articleQueryDTO, BindingResult result) {
+    @RequestMapping(method = RequestMethod.GET)
+    public BaseResponseDTO queryArticleList(@Validated ArticleQueryDTO articleQueryDTO, BindingResult result) {
         BaseResponseDTO responseDTO = new BaseResponseDTO();
         try {
             if (!result.hasErrors()) {
                 Map<String, Object> queryMap = new HashMap<>();
-                String articleTitle = articleQueryDTO.getArticleTitle();
-                if (!StringUtil.isEmpty(articleTitle)) {
-                    queryMap.put("articleTitle", articleQueryDTO.getArticleTitle());
-                }
-                Integer articleType = articleQueryDTO.getArticleType();
-                if (articleType != null) {
-                    queryMap.put("articleType", articleType);
-                }
-                Integer articleStatus = articleQueryDTO.getArticleStatus();
-                if (articleStatus != null) {
-                    queryMap.put("articleStatus", articleStatus);
-                }
+                new DozerBeanMapper().map(articleQueryDTO, queryMap);
 
                 Page<ArticleDo> articleDoPage = articleService.queryArticleList(queryMap);
                 List<ArticleDTO> articleList = new ArrayList<>();
@@ -105,10 +95,10 @@ public class ArticleController {
         BaseResponseDTO responseDTO = null;
         try {
             ArticleDTO articleDTO = articleService.queryArticleById(articleId);
-            responseDTO = ResponseUtil.buildSuccessResponse("查询文章详细信息成功");
+            responseDTO = ResponseUtil.buildSuccessResponse("查询文章详细成功");
             responseDTO.setData(articleDTO);
         } catch (WebInterfaceException ex) {
-            String errorMessage = "查询文章详细信息异常";
+            String errorMessage = "查询文章详细异常";
             responseDTO = ResponseUtil.buildErrorResponse(errorMessage);
             LOGGER.error(errorMessage, ex);
         }
@@ -122,12 +112,53 @@ public class ArticleController {
      * @return
      */
     @RequestMapping(method = RequestMethod.PUT)
-    public BaseResponseDTO updateArticle(@Valid ArticleUpdateDTO articleUpdateDTO, BindingResult result) {
+    public BaseResponseDTO updateArticle(@Validated @RequestBody ArticleUpdateDTO articleUpdateDTO, BindingResult result) {
         BaseResponseDTO responseDTO = null;
         try {
-
+            if (!result.hasErrors()) {
+                ArticleDTO articleDTO = new ArticleDTO();
+                BeanUtils.copyProperties(articleUpdateDTO, articleDTO);
+                boolean isSuccess = articleService.updateArticle(articleDTO);
+                if (isSuccess) {
+                    responseDTO = ResponseUtil.buildSuccessResponse("更新文章成功");
+                } else {
+                    responseDTO = ResponseUtil.buildFailResponse("更新文章失败");
+                }
+            } else {
+                responseDTO = ResponseUtil.buildWrongRequestResponse(result);
+            }
         } catch (WebInterfaceException ex) {
             String errorMessage = "更新文章信息异常";
+            responseDTO = ResponseUtil.buildErrorResponse(errorMessage);
+            LOGGER.error(errorMessage, ex);
+        }
+        return responseDTO;
+    }
+
+    /**
+     * 添加文章
+     * @param articleAddDTO
+     * @param result
+     * @return
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    public BaseResponseDTO addArticle(@Validated @RequestBody ArticleAddDTO articleAddDTO, BindingResult result, HttpServletRequest request) {
+        BaseResponseDTO responseDTO = null;
+        try {
+            if (!result.hasErrors()) {
+                ArticleDTO articleDTO = new ArticleDTO();
+                BeanUtils.copyProperties(articleAddDTO, articleDTO);
+                boolean isSuccess = articleService.addArticle(articleDTO, request);
+                if (isSuccess) {
+                    responseDTO = ResponseUtil.buildSuccessResponse("添加文章成功");
+                } else {
+                    responseDTO = ResponseUtil.buildFailResponse("添加文章失败");
+                }
+            } else {
+                responseDTO = ResponseUtil.buildWrongRequestResponse(result);
+            }
+        } catch (Exception ex) {
+            String errorMessage = "添加文章信息异常";
             responseDTO = ResponseUtil.buildErrorResponse(errorMessage);
             LOGGER.error(errorMessage, ex);
         }
