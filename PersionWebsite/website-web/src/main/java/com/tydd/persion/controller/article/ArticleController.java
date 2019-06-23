@@ -63,6 +63,8 @@ public class ArticleController {
                 for (ArticleDo articleDo : articleDoList) {
                     articleDTO = new ArticleDTO();
                     BeanUtils.copyProperties(articleDo, articleDTO);
+                    articleDTO.setArticleTypeId(articleDo.getArticleType().getId());
+                    articleDTO.setArticleTypeName(articleDo.getArticleType().getTypeName());
                     articleList.add(articleDTO);
                 }
                 ResponseDataDTO responseDataDTO = new ResponseDataDTO();

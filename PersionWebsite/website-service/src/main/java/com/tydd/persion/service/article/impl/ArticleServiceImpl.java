@@ -2,11 +2,13 @@ package com.tydd.persion.service.article.impl;
 
 import com.tydd.persion.dao.article.ArticleContentRepository;
 import com.tydd.persion.dao.article.ArticleRepository;
+import com.tydd.persion.dao.article.ArticleTypeRepository;
 import com.tydd.persion.dao.user.AdminUserRepository;
 import com.tydd.persion.dto.article.ArticleDTO;
 import com.tydd.persion.dto.user.AdminUserDTO;
 import com.tydd.persion.model.article.ArticleContentDo;
 import com.tydd.persion.model.article.ArticleDo;
+import com.tydd.persion.model.article.ArticleTypeDO;
 import com.tydd.persion.model.user.AdminUserDo;
 import com.tydd.persion.service.article.IArticleService;
 import com.tydd.persion.util.PagingUtil;
@@ -52,6 +54,9 @@ public class ArticleServiceImpl implements IArticleService {
     @Autowired
     private AdminUserRepository adminUserRepository;
 
+    @Autowired
+    private ArticleTypeRepository articleTypeRepository;
+
     /**
      * 查询文章列表
      * @param queryMap
@@ -90,6 +95,11 @@ public class ArticleServiceImpl implements IArticleService {
         return articleRepository.findAll(specification, PagingUtil.buildPageRequest(pageNumber, pageSize, order));
     }
 
+    /**
+     * 根据id查询文章
+     * @param id
+     * @return
+     */
     @Override
     @Transactional(readOnly = true)
     public ArticleDTO queryArticleById(Long id) {
@@ -162,14 +172,17 @@ public class ArticleServiceImpl implements IArticleService {
         if (articleDo != null) {
             // 更新文章基本信息
             String articleTitle = articleDTO.getArticleTitle();
-            Integer articleType = articleDTO.getArticleType();
+            Long articleTypeId = articleDTO.getArticleTypeId();
             String articleLabel = articleDTO.getArticleLabel();
             Integer articleStatus = articleDTO.getArticleStatus();
             if (!StringUtil.isEmpty(articleTitle)) {
                 articleDo.setArticleTitle(articleTitle);
             }
-            if (articleType != null) {
-                articleDo.setArticleType(articleType);
+            if (articleTypeId != null) {
+                ArticleTypeDO articleType = articleTypeRepository.findOne(articleTypeId);
+                if (articleType != null) {
+                    articleDo.setArticleType(articleType);
+                }
             }
             if (!StringUtil.isEmpty(articleLabel)) {
                 articleDo.setArticleLabel(articleLabel);
@@ -220,5 +233,15 @@ public class ArticleServiceImpl implements IArticleService {
             updateFlag = true;
         }
         return updateFlag;
+    }
+
+    /**
+     * 查询所有的文章类型
+     *
+     * @return
+     */
+    @Override
+    public List<ArticleTypeDO> queryAllArticleType() {
+        return articleTypeRepository.findAll();
     }
 }

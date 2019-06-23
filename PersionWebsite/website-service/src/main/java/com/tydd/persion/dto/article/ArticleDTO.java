@@ -3,9 +3,7 @@ package com.tydd.persion.dto.article;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.tydd.persion.dto.BaseDTO;
-import com.tydd.persion.model.user.AdminUserDo;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -32,9 +30,12 @@ public class ArticleDTO extends BaseDTO {
     @NotEmpty
     private String articlePlainText;
 
-    /** 文章类型 */
+    /** 文章类型ID */
     @NotNull
-    private Integer articleType;
+    private Long articleTypeId;
+
+    /** 文章类型名称 */
+    private String articleTypeName;
 
     /** 文章标签 */
     private String articleLabel;
@@ -57,10 +58,11 @@ public class ArticleDTO extends BaseDTO {
     @Override
     public String toString() {
         return "ArticleDTO{" +
-                ", articleTitle='" + articleTitle + '\'' +
-                ", articleContent=" + articleContent +
+                "articleTitle='" + articleTitle + '\'' +
+                ", articleContent='" + articleContent + '\'' +
                 ", articlePlainText='" + articlePlainText + '\'' +
-                ", articleType=" + articleType +
+                ", articleTypeId=" + articleTypeId +
+                ", articleTypeName=" + articleTypeName +
                 ", articleLabel='" + articleLabel + '\'' +
                 ", createTime=" + createTime +
                 ", updateTime=" + updateTime +
@@ -93,12 +95,20 @@ public class ArticleDTO extends BaseDTO {
         this.articlePlainText = articlePlainText;
     }
 
-    public Integer getArticleType() {
-        return articleType;
+    public Long getArticleTypeId() {
+        return articleTypeId;
     }
 
-    public void setArticleType(Integer articleType) {
-        this.articleType = articleType;
+    public void setArticleTypeId(Long articleTypeId) {
+        this.articleTypeId = articleTypeId;
+    }
+
+    public String getArticleTypeName() {
+        return articleTypeName;
+    }
+
+    public void setArticleTypeName(String articleTypeName) {
+        this.articleTypeName = articleTypeName;
     }
 
     public String getArticleLabel() {

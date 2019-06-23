@@ -29,8 +29,9 @@ public class ArticleDo {
     private ArticleContentDo articleContentDo;
 
     /** 文章类型 */
-    @Column(name = "article_type", nullable = false, columnDefinition = "int(2) comment '文章类型'")
-    private Integer articleType;
+    @ManyToOne(cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name="articleType", nullable = true)
+    private ArticleTypeDO articleType;
 
     /** 文章标签 */
     @Column(name = "article_label", nullable = true, columnDefinition = "varchar(300) comment '文章标签，多个逗号分隔'")
@@ -97,11 +98,11 @@ public class ArticleDo {
         this.articleContentDo = articleContentDo;
     }
 
-    public Integer getArticleType() {
+    public ArticleTypeDO getArticleType() {
         return articleType;
     }
 
-    public void setArticleType(Integer articleType) {
+    public void setArticleType(ArticleTypeDO articleType) {
         this.articleType = articleType;
     }
 

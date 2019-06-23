@@ -2,9 +2,11 @@ package com.tydd.persion.service.article;
 
 import com.tydd.persion.dto.article.ArticleDTO;
 import com.tydd.persion.model.article.ArticleDo;
+import com.tydd.persion.model.article.ArticleTypeDO;
 import org.springframework.data.domain.Page;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,5 +55,11 @@ public interface IArticleService {
      * @return
      */
     boolean updateArticleContent(Long id, String content, String plainText);
+
+    /**
+     * 查询所有的文章类型
+     * @return
+     */
+    List<ArticleTypeDO> queryAllArticleType();
 
 }
