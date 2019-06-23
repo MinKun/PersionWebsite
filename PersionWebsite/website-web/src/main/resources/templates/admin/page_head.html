@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh">
+<head>
+    <meta content="text/templates;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>汤圆爹爹.管理员</title>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">汤圆爹爹</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li pageIndex="1">
+                        <a href="javascript:void(0);" class="page_header_link">首页</a>
+                    </li>
+                    <li pageIndex="2">
+                        <a href="javascript:void(0);" class="page_header_link">文章</a>
+                    </li>
+                    <li pageIndex="3">
+                        <a href="javascript:void(0);" class="page_header_link">相册</a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">网站设置 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="javascript:void(0);">普通设置</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);">评论设置</a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);">访问记录</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script type="text/javascript">
+        function bindPageHeaderLink() {
+            $(".page_header_link").on('click', function(e){
+                var index = $(e.currentTarget).parent().attr("pageIndex");
+                var body_div_url = sessionStorage.getItem("baseUrl");
+                if (index == "1") {
+                    body_div_url += "/persion-website/admin/index";
+                } else if (index == "2") {
+                    body_div_url += "/persion-website/admin/article/list";
+                } else if (index == "3") {
+                    body_div_url += "/persion-website/admin/album/list";
+                }
+                window.location.href = body_div_url;
+            });
+        }
+
+        $(function(){
+            bindPageHeaderLink();
+        });
+    </script>
+</body>
+</html>
