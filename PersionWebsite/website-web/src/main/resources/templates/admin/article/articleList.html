@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta content="text/templates;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="stylesheet" th:href="|${staticResourceUrl}/bootstrap/css/bootstrap.min.css|"/>
+    <link rel="stylesheet" th:href="|${staticResourceUrl}/bootstrap/css/bootstrap-theme.min.css|"/>
+    <link rel="stylesheet" th:href="|${staticResourceUrl}/bootstrap/css/theme.css|"/>
+    <link rel="stylesheet" th:href="|${staticResourceUrl}/css/main.css|"/>
+    <script type="application/javascript" th:src="|${staticResourceUrl}/bootstrap/js/ie-emulation-modes-warning.js|"></script>
+    <style type="text/css">
+        .list-tr {
+            height: 60px;
+        }
+        .list-tr td {
+            vertical-align: middle !important;;
+        }
+    </style>
+    <title>管理后台-文章</title>
+</head>
+<body>
+    <!-- 头部开始 -->
+    <div id="head_div"></div>
+    <!-- 头部结束 -->
+    <div class="container theme-showcase" role="main">
+        <h3>文章列表</h3>
+        <hr/>
+
+        <!-- 查询开始 -->
+        <div class="row">
+            <div class="col-lg-6">
+                <input type="text" class="form-control" placeholder="标题"/>
+            </div>
+            <div class="col-lg-4">
+                <select class="form-control">
+                    <option articleType="-1">选择文章类别</option>
+                    <option th:each="articleType:${articleTypeList}" th:attr="articleType=${articleType.id}"><span th:text="${articleType.typeName}"></span></option>
+                </select>
+            </div>
+            <div class="col-lg-2">
+                <button type="button" class="btn btn-primary">查询</button>
+            </div>
+        </div>
+        <!-- 查询结束 -->
+
+        <!-- 表格开始 -->
+        <div style="padding-top: 20px">
+            <table class="table">
+                <thead>
+                <tr>
+                    <td width="30%">标题</td>
+                    <td width="15%">类别</td>
+                    <td width="15%">标签</td>
+                    <td width="5%">状态</td>
+                    <td width="10%">创建时间</td>
+                    <td width="10%">发布时间</td>
+                    <td width="15%">操作</td>
+                </tr>
+                </thead>
+                <tbody id="article_list_tbody"></tbody>
+            </table>
+        </div>
+        <!-- 表格结束 -->
+
+        <!-- 页签开始 -->
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li>
+                        <a href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <!-- 页签结束 -->
+
+    </div>
+
+    <footer class="navbar-fixed-bottom">
+        <div class="container">
+            <ul class="list-inline text-center">
+                <li><a href="http://www.miibeian.gov.cn/" target="_blank">京ICP备11008151号</a></li><li>京公网安备11010802014853</li>
+            </ul>
+        </div>
+    </footer>
+
+    <script type="application/xhtml+xml" id="article_list_tmp">
+        <tr class="list-tr">
+            <td><strong>@title</strong></td>
+            <td><em>@type</em></td>
+            <td>@label</td>
+            <td>@status</td>
+            <td>@create_time</td>
+            <td>@release_time</td>
+            <td>
+                <button type="button" class="btn btn-default btn-xs">编辑</button>
+                <button type="button" class="btn btn-default btn-xs">@btnName</button>
+                <button type="button" class="btn btn-danger btn-xs">删除</button>
+            </td>
+        </tr>
+    </script>
+    <script type="application/javascript" th:src="|${staticResourceUrl}/jquery/3.2.1/jquery.min.js|"></script>
+    <script type="application/javascript" th:src="|${staticResourceUrl}/bootstrap/js/bootstrap.min.js|"></script>
+    <script type="application/javascript" th:src="|${staticResourceUrl}/js/admin/main.js|"></script>
+    <script type="application/javascript" th:src="|${staticResourceUrl}/js/admin/article/list.js|"></script>
+</body>
+</html>
